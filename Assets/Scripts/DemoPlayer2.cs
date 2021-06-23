@@ -9,35 +9,24 @@ namespace DemoGame
     {
         public DemoServer server;
         public GameObject goServer;
-
-        // public NetworkVariableVector3 p2_move_vector = new NetworkVariableVector3(new NetworkVariableSettings
-        // {
-        //     WritePermission = NetworkVariablePermission.Everyone,
-        //     ReadPermission = NetworkVariablePermission.Everyone
-        // });
+        public GameObject player2;
+        public Rigidbody p2_rb;
         
         void Awake(){
             Debug.Log("DemoPlayer Awake");
             goServer = GameObject.FindGameObjectsWithTag("goServer")[0];
             server = goServer.GetComponent<DemoServer>();
-            transform.position = server.p2_Position.Value;
+            transform.position = new Vector3(-4f, 0.5f, 4f);
             Debug.Log("transform.position" + transform.position);
 
-            server.p2_Position.OnValueChanged += OnChangeP2Position;
+            player2 = GameObject.FindGameObjectsWithTag("player2")[0];
+            p2_rb = player2.GetComponent<Rigidbody>();
         }
 
         public override void NetworkStart(){
             
             Debug.Log("Local clientId: "+ NetworkManager.Singleton.LocalClientId);
             Debug.Log("Connected List: "+ NetworkManager.Singleton.ConnectedClientsList);
-            // p2_move_vector.Value = Vector3.zero;
-        }
-
-        void OnChangeP2Position(Vector3 OldP2Position, Vector3 NewP2Position){
-            transform.position = server.p2_Position.Value;
-            // p2_move_vector.Value = Vector3.zero;
-            Debug.Log($"New p2_position is {NewP2Position}. Before it was {OldP2Position}");
-            // Debug.Log($"p2_move_vector reset to {p2_move_vector.Value}");
         }
 
         Vector3 left = new Vector3(-1, 0, 0);
@@ -47,27 +36,24 @@ namespace DemoGame
         public void Move(){
             if (Input.GetKey(KeyCode.UpArrow)){
                 MoveP2ServerRpc(up);
-                // p2_move_vector.Value += up;
             }
             if (Input.GetKey(KeyCode.DownArrow)){
                 MoveP2ServerRpc(down);
-                // p2_move_vector.Value += down;
             }
             if (Input.GetKey(KeyCode.RightArrow)){
                 MoveP2ServerRpc(right);
-                // p2_move_vector.Value += right;
             }
             if (Input.GetKey(KeyCode.LeftArrow)){
                 MoveP2ServerRpc(left);
-                // p2_move_vector.Value += left;
             }
         }
 
         [ServerRpc]
         void MoveP2ServerRpc(Vector3 dir){
-            Debug.Log("MoveP1 ServerRpc called");
-            server.p2_Position.Value += (Vector3.Normalize(dir) / 10);
+            Debug.Log($"MoveP2 ServerRpc called, nudged in direction {dir}.");
+            server.NudgeP2ClientRpc(dir);
         }
+
 
         void Update()
         {   

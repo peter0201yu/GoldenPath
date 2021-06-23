@@ -15,8 +15,6 @@ namespace DemoGame
             else
             {   
                 StatusLabels();
-
-                // MovePlayers();
             }
 
             GUILayout.EndArea();
@@ -43,38 +41,11 @@ namespace DemoGame
                 NetworkManager.Singleton.NetworkConfig.NetworkTransport.GetType().Name);
             GUILayout.Label("Mode: " + mode);
             GUILayout.Label("ClientId: " + NetworkManager.Singleton.LocalClientId);
-            // if (mode == "Server"){
+            if (mode == "Server"){
                 GUILayout.Label("ServerClientId: " + NetworkManager.Singleton.ServerClientId);
                 GUILayout.Label("Connect clients: " + NetworkManager.Singleton.ConnectedClientsList.Count);
-            // }
+            }
         }
 
-        // static void MovePlayers()
-        // {   
-        //     if (NetworkManager.Singleton.ConnectedClients.TryGetValue(0, out var networkServer)){
-        //         var server = networkServer.PlayerObject.GetComponent<DemoServer>();
-        //         server.Move();
-        //     }
-        // }
-
-        // static void MoveP2()
-        // {
-            // if (GUILayout.Button("Move")){
-            //     if (NetworkManager.Singleton.ConnectedClients.TryGetValue(NetworkManager.Singleton.LocalClientId,
-            //         out var networkedClient))
-            //     {
-            //         var player = networkedClient.PlayerObject.GetComponent<DemoPlayer2>();
-            //         player.Move();
-            //     }
-            // }
-        //     if (NetworkManager.Singleton.ConnectedClients.TryGetValue(NetworkManager.Singleton.LocalClientId,
-        //             out var networkedClient))
-        //         {   
-        //             var player2 = networkedClient.PlayerObject.GetComponent<DemoPlayer2>();
-        //             if (player2){
-        //                 player2.Move();
-        //             }
-        //         }
-        // }
     }
 }
