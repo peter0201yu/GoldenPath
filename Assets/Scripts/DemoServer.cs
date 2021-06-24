@@ -33,30 +33,32 @@ namespace DemoGame
         }
 
         [ClientRpc]
-        public void NudgeP1ClientRpc(Vector3 dir){
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(2,
-                out var networkedClient2))
-            {
-                player1 = networkedClient2.PlayerObject.GetComponent<DemoPlayer>();
-                if (player1){
-                    player1.p1_rb.AddForce(dir);
+        public void NudgeClientRpc(Vector3 dir, int player_num){
+            if (player_num == 1){
+                if (NetworkManager.Singleton.ConnectedClients.TryGetValue(2,
+                    out var networkedClient2))
+                {
+                    player1 = networkedClient2.PlayerObject.GetComponent<DemoPlayer>();
+                    if (player1){
+                        player1.p1_rb.AddForce(dir);
+                    }
                 }
+                Debug.Log($"ClientRpc called, nudged player1 in direction {dir}");
             }
-            Debug.Log($"ClientRpc called, nudged player1 in direction {dir}");
+            else if (player_num == 2){
+                if (NetworkManager.Singleton.ConnectedClients.TryGetValue(3,
+                    out var networkedClient2))
+                {
+                    player2 = networkedClient2.PlayerObject.GetComponent<DemoPlayer2>();
+                    if (player2){
+                        player2.p2_rb.AddForce(dir);
+                    }
+                }
+                Debug.Log($"ClientRpc called, nudged player2 in direction {dir}");
+            }
+
         }
 
-        [ClientRpc]
-        public void NudgeP2ClientRpc(Vector3 dir){
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(3,
-                out var networkedClient2))
-            {
-                player2 = networkedClient2.PlayerObject.GetComponent<DemoPlayer2>();
-                if (player2){
-                    player2.p2_rb.AddForce(dir);
-                }
-            }
-            Debug.Log($"ClientRpc called, nudged player2 in direction {dir}");
-        }
 
         // public void MovePlayers(){
 

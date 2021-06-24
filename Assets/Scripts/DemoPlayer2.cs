@@ -51,7 +51,7 @@ namespace DemoGame
         [ServerRpc]
         void MoveP2ServerRpc(Vector3 dir){
             Debug.Log($"MoveP2 ServerRpc called, nudged in direction {dir}.");
-            server.NudgeP2ClientRpc(dir);
+            server.NudgeClientRpc(dir, 2);
         }
 
 
