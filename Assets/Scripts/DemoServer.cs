@@ -8,29 +8,56 @@ namespace DemoGame
 {
     public class DemoServer : NetworkBehaviour
     {
-        // public NetworkVariableVector3 p1_Position = new NetworkVariableVector3(new NetworkVariableSettings
-        // {
-        //     WritePermission = NetworkVariablePermission.ServerOnly,
-        //     ReadPermission = NetworkVariablePermission.Everyone
-        // });
-
-        // public NetworkVariableVector3 p2_Position = new NetworkVariableVector3(new NetworkVariableSettings
-        // {
-        //     WritePermission = NetworkVariablePermission.ServerOnly,
-        //     ReadPermission = NetworkVariablePermission.Everyone
-        // });
-
+        
         public GameObject goSpawner;
         public SpawnerTest spawner;
         public DemoPlayer player1;
         public DemoPlayer2 player2;
+        public object Player1Prefab;
+        public object Player2Prefab;
 
-        public override void NetworkStart(){
-            // if (IsServer){
-            //     p1_Position.Value = new Vector3(4f, 0.5f, -4f);
-            //     p2_Position.Value = new Vector3(-4f, 0.5f, 4f);
-            // }
+        public GameObject goServer;
+        public void Start()
+        {
+            Player1Prefab = Resources.Load("Prefabs/Player1");
+            Player2Prefab = Resources.Load("Prefabs/Player2");
         }
+        public override void NetworkStart()
+        {   
+            if (NetworkManager.Singleton.IsServer) {
+                Debug.Log("Server started.");
+            }
+            else{
+                Debug.Log("Using spawner to send rpc");
+                SpawnPlayerServerRpc(NetworkManager.Singleton.LocalClientId);
+            }
+
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        public void SpawnPlayerServerRpc(ulong ClientId)
+        {   
+            if (IsServer){
+                SpawnPlayer(ClientId);
+            }
+        }
+
+        public GameObject goPlayer;
+        public void SpawnPlayer(ulong ClientId)
+        {   
+            if (NetworkManager.Singleton.ConnectedClientsList.Count == 1){
+                goPlayer = Instantiate(Player1Prefab as GameObject);
+                goPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(ClientId);
+                Debug.Log("Spawned Player 1, owner clientId = " + ClientId);
+            }
+            else{
+                goPlayer = Instantiate(Player2Prefab as GameObject);
+                goPlayer.GetComponent<NetworkObject>().SpawnAsPlayerObject(ClientId);
+                Debug.Log("Spawned Player 2, owner clientId = " + ClientId);
+            }
+            
+        }
+
 
         [ClientRpc]
         public void NudgeClientRpc(Vector3 dir, int player_num){
@@ -47,9 +74,9 @@ namespace DemoGame
             }
             else if (player_num == 2){
                 if (NetworkManager.Singleton.ConnectedClients.TryGetValue(3,
-                    out var networkedClient2))
+                    out var networkedClient3))
                 {
-                    player2 = networkedClient2.PlayerObject.GetComponent<DemoPlayer2>();
+                    player2 = networkedClient3.PlayerObject.GetComponent<DemoPlayer2>();
                     if (player2){
                         player2.p2_rb.AddForce(dir);
                     }
@@ -58,42 +85,6 @@ namespace DemoGame
             }
 
         }
-
-
-        // public void MovePlayers(){
-
-        //     if (NetworkManager.Singleton.ConnectedClients.TryGetValue(2,
-        //         out var networkedClient2))
-        //     {
-        //         player1 = networkedClient2.PlayerObject.GetComponent<DemoPlayer>();
-        //         if (player1){
-        //             p1_Position.Value += (Vector3.Normalize(player1.p1_move_vector.Value) / 10);
-        //         }
-        //         else{
-        //             Debug.Log("No player 1! Error.");
-        //         }
-        //     }
-
-        //     if (NetworkManager.Singleton.ConnectedClients.TryGetValue(3,
-        //         out var networkedClient3))
-        //     {
-        //         player2 = networkedClient3.PlayerObject.GetComponent<DemoPlayer2>();
-        //         if (player2){
-        //             p2_Position.Value += (Vector3.Normalize(player2.p2_move_vector.Value) / 10);
-        //         }
-        //         else{
-        //             Debug.Log("No player 2! Error.");
-        //         }
-        //     }
-
-        // }
-
-        public void Update(){
-            // if (IsServer){
-            //     MovePlayers();
-            // }
-        }
-        
 
     }
 }

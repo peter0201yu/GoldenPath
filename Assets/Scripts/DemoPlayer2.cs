@@ -13,7 +13,7 @@ namespace DemoGame
         public Rigidbody p2_rb;
         
         void Awake(){
-            Debug.Log("DemoPlayer Awake");
+            Debug.Log("DemoPlayer2 Awake");
             goServer = GameObject.FindGameObjectsWithTag("goServer")[0];
             server = goServer.GetComponent<DemoServer>();
             transform.position = new Vector3(-4f, 0.5f, 4f);
