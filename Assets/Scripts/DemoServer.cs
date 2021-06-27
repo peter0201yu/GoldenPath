@@ -9,8 +9,6 @@ namespace DemoGame
     public class DemoServer : NetworkBehaviour
     {
         
-        public GameObject goSpawner;
-        public SpawnerTest spawner;
         public DemoPlayer player1;
         public DemoPlayer2 player2;
         public object Player1Prefab;
